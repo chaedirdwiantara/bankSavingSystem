@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CustomerStackParamList } from '../../navigation/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { customerActions } from '../../store/slices/customerSlice';
-import { Screen, Card, Button, Loading, EmptyState } from '../../components';
+import { Screen, Card, Button, Loading, EmptyState, Input } from '../../components';
 import { Colors } from '../../constants/colors';
 import { Spacing } from '../../constants/spacing';
 import { FontSizes, FontWeights } from '../../constants/typography';
@@ -15,6 +15,7 @@ type Props = NativeStackScreenProps<CustomerStackParamList, 'CustomerList'>;
 const CustomerListScreen: React.FC<Props> = ({ navigation }) => {
     const dispatch = useAppDispatch();
     const { customers, loading } = useAppSelector(state => state.customer);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         dispatch(customerActions.fetchCustomersRequest());
@@ -27,6 +28,11 @@ const CustomerListScreen: React.FC<Props> = ({ navigation }) => {
     const handleCustomerPress = (customerId: string) => {
         navigation.navigate('CustomerDetail', { customerId });
     };
+
+    // Filter customers based on search query
+    const filteredCustomers = customers.filter(customer =>
+        customer.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
 
     if (loading) {
         return (
@@ -48,18 +54,32 @@ const CustomerListScreen: React.FC<Props> = ({ navigation }) => {
                 />
             </View>
 
-            {customers.length === 0 ? (
+            {/* Search Bar */}
+            <Input
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search customers..."
+                style={styles.searchInput}
+            />
+
+            {filteredCustomers.length === 0 ? (
                 <EmptyState
-                    title="No Customers Yet"
-                    description="Start by adding your first customer"
-                    icon="👤"
+                    title={searchQuery ? 'No Results Found' : 'No Customers Yet'}
+                    description={
+                        searchQuery
+                            ? `No customers match "${searchQuery}"`
+                            : 'Start by adding your first customer'
+                    }
+                    icon={searchQuery ? '🔍' : '👤'}
                     action={
-                        <Button title="Add Customer" onPress={handleAdd} variant="primary" />
+                        !searchQuery ? (
+                            <Button title="Add Customer" onPress={handleAdd} variant="primary" />
+                        ) : undefined
                     }
                 />
             ) : (
                 <FlatList
-                    data={customers}
+                    data={filteredCustomers}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <Card onPress={() => handleCustomerPress(item.id)} variant="outlined">
@@ -86,7 +106,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: Spacing.lg,
+        marginBottom: Spacing.md,
     },
     title: {
         fontSize: FontSizes['2xl'],
@@ -95,6 +115,9 @@ const styles = StyleSheet.create({
     },
     addButton: {
         minWidth: 80,
+    },
+    searchInput: {
+        marginBottom: Spacing.md,
     },
     customerCard: {
         flexDirection: 'row',

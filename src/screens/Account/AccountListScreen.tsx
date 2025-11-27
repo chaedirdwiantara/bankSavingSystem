@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AccountStackParamList } from '../../navigation/types';
@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { accountActions } from '../../store/slices/accountSlice';
 import { customerActions } from '../../store/slices/customerSlice';
 import { depositoActions } from '../../store/slices/depositoSlice';
-import { Screen, Card, Button, Loading, EmptyState } from '../../components';
+import { Screen, Card, Button, Loading, EmptyState, Input } from '../../components';
 import { Colors } from '../../constants/colors';
 import { Spacing } from '../../constants/spacing';
 import { FontSizes, FontWeights } from '../../constants/typography';
@@ -19,6 +19,7 @@ const AccountListScreen: React.FC<Props> = ({ navigation }) => {
     const { accounts, loading } = useAppSelector(state => state.account);
     const { customers } = useAppSelector(state => state.customer);
     const { depositoTypes } = useAppSelector(state => state.deposito);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         dispatch(accountActions.fetchAccountsRequest());
@@ -42,6 +43,12 @@ const AccountListScreen: React.FC<Props> = ({ navigation }) => {
         return depositoTypes.find(d => d.id === id)?.name || 'Unknown Type';
     };
 
+    // Filter accounts based on customer name search
+    const filteredAccounts = accounts.filter(account => {
+        const customerName = getCustomerName(account.customerId);
+        return customerName.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
     if (loading) {
         return (
             <Screen>
@@ -62,18 +69,32 @@ const AccountListScreen: React.FC<Props> = ({ navigation }) => {
                 />
             </View>
 
-            {accounts.length === 0 ? (
+            {/* Search Bar */}
+            <Input
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search by customer name..."
+                style={styles.searchInput}
+            />
+
+            {filteredAccounts.length === 0 ? (
                 <EmptyState
-                    title="No Accounts Yet"
-                    description="Create your first savings account"
-                    icon="💼"
+                    title={searchQuery ? 'No Results Found' : 'No Accounts Yet'}
+                    description={
+                        searchQuery
+                            ? `No accounts match "${searchQuery}"`
+                            : 'Create your first savings account'
+                    }
+                    icon={searchQuery ? '🔍' : '💼'}
                     action={
-                        <Button title="Open Account" onPress={handleAdd} variant="primary" />
+                        !searchQuery ? (
+                            <Button title="Open Account" onPress={handleAdd} variant="primary" />
+                        ) : undefined
                     }
                 />
             ) : (
                 <FlatList
-                    data={accounts}
+                    data={filteredAccounts}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <Card onPress={() => handlePress(item.id)} variant="outlined">
@@ -105,7 +126,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: Spacing.lg,
+        marginBottom: Spacing.md,
     },
     title: {
         fontSize: FontSizes['2xl'],
@@ -114,6 +135,9 @@ const styles = StyleSheet.create({
     },
     addButton: {
         minWidth: 80,
+    },
+    searchInput: {
+        marginBottom: Spacing.md,
     },
     cardContent: {
         flexDirection: 'row',
