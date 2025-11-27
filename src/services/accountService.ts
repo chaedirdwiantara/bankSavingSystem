@@ -1,16 +1,8 @@
-import { getData, setData } from './storage';
-import { Account, CreateAccountDTO } from '@types/account';
-import { v4 as uuidv4 } from 'uuid';
-
-const STORAGE_KEY = 'accounts';
-
-export async function getAllAccounts(): Promise<Account[]> {
-    try {
-        const data = await getData<Account[]>(STORAGE_KEY);
-        return data || [];
+const data = await getData<Account[]>(STORAGE_KEY);
+return data || [];
     } catch (error) {
-        throw new Error('Failed to fetch accounts');
-    }
+    throw new Error('Failed to fetch accounts');
+}
 }
 
 export async function getAccountById(id: string): Promise<Account | null> {

@@ -1,11 +1,3 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Transaction } from '@types/transaction';
-
-interface TransactionState {
-    transactions: Transaction[];
-    loading: boolean;
-    error: string | null;
-}
 
 const initialState: TransactionState = {
     transactions: [],

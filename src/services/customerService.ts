@@ -1,12 +1,3 @@
-import { getData, setData } from './storage';
-import { Customer, CreateCustomerDTO, UpdateCustomerDTO } from '@types/customer';
-import { v4 as uuidv4 } from 'uuid';
-import { dummyCustomers } from './dummy/data';
-
-const STORAGE_KEY = 'customers';
-
-// Initialize with dummy data on first run
-let initialized = false;
 
 async function ensureInitialized(): Promise<void> {
     if (initialized) return;

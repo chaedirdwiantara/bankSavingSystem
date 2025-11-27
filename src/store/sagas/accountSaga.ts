@@ -1,17 +1,6 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { accountActions } from '../slices/accountSlice';
-import * as accountService from '@services/accountService';
-import { Account } from '@types/account';
-
-// Worker Saga: fetch accounts
-function* fetchAccountsSaga() {
-    try {
-        const accounts: Account[] = yield call(accountService.getAllAccounts);
-        yield put(accountActions.fetchAccountsSuccess(accounts));
     } catch (error: any) {
-        yield put(accountActions.fetchAccountsFailure(error.message));
-    }
+    yield put(accountActions.fetchAccountsFailure(error.message));
+}
 }
 
 // Worker Saga: create account

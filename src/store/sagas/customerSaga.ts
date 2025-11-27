@@ -1,17 +1,6 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { customerActions } from '../slices/customerSlice';
-import * as customerService from '@services/customerService';
-import { Customer } from '@types/customer';
-
-// Worker Saga: fetch customers
-function* fetchCustomersSaga() {
-    try {
-        const customers: Customer[] = yield call(customerService.getAllCustomers);
-        yield put(customerActions.fetchCustomersSuccess(customers));
     } catch (error: any) {
-        yield put(customerActions.fetchCustomersFailure(error.message));
-    }
+    yield put(customerActions.fetchCustomersFailure(error.message));
+}
 }
 
 // Worker Saga: create customer

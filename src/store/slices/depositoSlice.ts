@@ -1,11 +1,3 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { DepositoType } from '@types/deposito';
-
-interface DepositoState {
-    depositoTypes: DepositoType[];
-    selectedDepositoType: DepositoType | null;
-    loading: boolean;
-    error: string | null;
 }
 
 const initialState: DepositoState = {

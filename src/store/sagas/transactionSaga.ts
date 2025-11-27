@@ -1,22 +1,10 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { transactionActions } from '../slices/transactionSlice';
-import { accountActions } from '../slices/accountSlice';
-import * as transactionService from '@services/transactionService';
-import { Transaction } from '@types/transaction';
-import { RootState } from '../store';
-
-// Worker Saga: fetch transactions
-function* fetchTransactionsSaga(action: PayloadAction<string>) {
-    try {
-        const transactions: Transaction[] = yield call(
-            transactionService.getTransactionsByAccount,
-            action.payload,
+transactionService.getTransactionsByAccount,
+    action.payload,
         );
-        yield put(transactionActions.fetchTransactionsSuccess(transactions));
+yield put(transactionActions.fetchTransactionsSuccess(transactions));
     } catch (error: any) {
-        yield put(transactionActions.fetchTransactionsFailure(error.message));
-    }
+    yield put(transactionActions.fetchTransactionsFailure(error.message));
+}
 }
 
 // Worker Saga: create deposit

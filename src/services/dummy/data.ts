@@ -1,27 +1,19 @@
-import { DepositoType } from '@types/deposito';
-import { Customer } from '@types/customer';
-
-export const dummyDepositoTypes: DepositoType[] = [
-    {
-        id: 'deposito-1',
-        name: 'Deposito Bronze',
-        yearlyReturn: 0.03, // 3%
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
+createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
     },
-    {
-        id: 'deposito-2',
+{
+    id: 'deposito-2',
         name: 'Deposito Silver',
-        yearlyReturn: 0.05, // 5%
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
+            yearlyReturn: 0.05, // 5%
+                createdAt: new Date('2024-01-01'),
+                    updatedAt: new Date('2024-01-01'),
     },
-    {
-        id: 'deposito-3',
+{
+    id: 'deposito-3',
         name: 'Deposito Gold',
-        yearlyReturn: 0.07, // 7%
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
+            yearlyReturn: 0.07, // 7%
+                createdAt: new Date('2024-01-01'),
+                    updatedAt: new Date('2024-01-01'),
     },
 ];
 

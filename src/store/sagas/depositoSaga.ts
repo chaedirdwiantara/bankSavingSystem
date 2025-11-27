@@ -1,19 +1,8 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { depositoActions } from '../slices/depositoSlice';
-import * as depositoService from '@services/depositoTypeService';
-import { DepositoType } from '@types/deposito';
-
-// Worker Saga: fetch deposito types
-function* fetchDepositoTypesSaga() {
-    try {
-        const depositoTypes: DepositoType[] = yield call(
-            depositoService.getAllDepositoTypes,
         );
-        yield put(depositoActions.fetchDepositoTypesSuccess(depositoTypes));
+yield put(depositoActions.fetchDepositoTypesSuccess(depositoTypes));
     } catch (error: any) {
-        yield put(depositoActions.fetchDepositoTypesFailure(error.message));
-    }
+    yield put(depositoActions.fetchDepositoTypesFailure(error.message));
+}
 }
 
 // Worker Saga: create deposito type

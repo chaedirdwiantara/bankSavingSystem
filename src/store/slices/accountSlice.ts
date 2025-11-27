@@ -1,11 +1,3 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Account } from '@types/account';
-
-interface AccountState {
-    accounts: Account[];
-    selectedAccount: Account | null;
-    loading: boolean;
-    error: string | null;
 }
 
 const initialState: AccountState = {
