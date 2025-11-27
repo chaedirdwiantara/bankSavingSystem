@@ -10,7 +10,7 @@ import WithdrawalFormScreen from '../screens/Transaction/WithdrawalFormScreen';
 
 const Stack = createNativeStackNavigator<AccountStackParamList>();
 
-const AccountNavigator = () => {
+export const AccountNavigator = () => {
     return (
         <Stack.Navigator
             screenOptions={{
@@ -26,4 +26,4 @@ const AccountNavigator = () => {
     );
 };
 
-export default AccountNavigator;
+
