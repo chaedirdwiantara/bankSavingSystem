@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { CustomerStackParamList } from '@navigation/types';
-import { Screen, Card, Button, Loading, Modal } from '@components';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { customerActions } from '@store/slices/customerSlice';
-import { accountActions } from '@store/slices/accountSlice';
-import { Colors } from '@constants/colors';
-import { Spacing } from '@constants/spacing';
-import { FontSizes, FontWeights } from '@constants/typography';
-import { formatDate } from '@utils/formatters';
+import { CustomerStackParamList } from '../../navigation/types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { customerActions } from '../../store/slices/customerSlice';
+import { accountActions } from '../../store/slices/accountSlice';
+import { Screen, Card, Button, Loading, Modal } from '../../components';
+import { Colors } from '../../constants/colors';
+import { Spacing } from '../../constants/spacing';
+import { FontSizes, FontWeights } from '../../constants/typography';
+import { formatDate } from '../../utils/formatters';
 
 type Props = NativeStackScreenProps<CustomerStackParamList, 'CustomerDetail'>;
 
@@ -21,8 +21,8 @@ const CustomerDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    const customer = customers.find(c => c.id === customerId);
-    const customerAccounts = accounts.filter(a => a.customerId === customerId);
+    const customer = customers.find((c: any) => c.id === customerId);
+    const customerAccounts = accounts.filter((a: any) => a.customerId === customerId);
 
     useEffect(() => {
         dispatch(accountActions.fetchAccountsRequest());
@@ -104,7 +104,7 @@ const CustomerDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                 {customerAccounts.length === 0 ? (
                     <Text style={styles.noData}>No accounts yet</Text>
                 ) : (
-                    customerAccounts.map(account => (
+                    customerAccounts.map((account: any) => (
                         <View key={account.id} style={styles.accountItem}>
                             <Text style={styles.accountText}>Account ID: {account.id.substring(0, 8)}...</Text>
                             <Text style={styles.accountBalance}>

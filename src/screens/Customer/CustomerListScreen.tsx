@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
-import { FlatList, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { CustomerStackParamList } from '@navigation/types';
-import { Screen, Card, Button, EmptyState, Loading } from '@components';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { customerActions } from '@store/slices/customerSlice';
-import { Colors } from '@constants/colors';
-import { Spacing } from '@constants/spacing';
-import { FontSizes, FontWeights } from '@constants/typography';
-import { formatDate } from '@utils/formatters';
+import { CustomerStackParamList } from '../../navigation/types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { customerActions } from '../../store/slices/customerSlice';
+import { Screen, Card, Button, Loading, EmptyState } from '../../components';
+import { Colors } from '../../constants/colors';
+import { Spacing } from '../../constants/spacing';
+import { FontSizes, FontWeights } from '../../constants/typography';
+import { formatDate } from '../../utils/formatters';
 
 type Props = NativeStackScreenProps<CustomerStackParamList, 'CustomerList'>;
 

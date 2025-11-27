@@ -1,11 +1,24 @@
+import { call, put, takeLatest } from 'redux-saga/effects';
+import { PayloadAction } from '@reduxjs/toolkit';
+import * as depositoService from '../../services/depositoTypeService';
+import { depositoActions } from '../slices/depositoSlice';
+import { DepositoType } from '../../types/deposito';
+
+function* fetchDepositoTypesSaga() {
+    try {
+        const depositoTypes: DepositoType[] = yield call(
+            depositoService.getAllDepositoTypes,
         );
-yield put(depositoActions.fetchDepositoTypesSuccess(depositoTypes));
+        yield put(depositoActions.fetchDepositoTypesSuccess(depositoTypes));
     } catch (error: any) {
-    yield put(depositoActions.fetchDepositoTypesFailure(error.message));
-}
+        yield put(
+            depositoActions.fetchDepositoTypesFailure(
+                error.message || 'Failed to fetch deposito types',
+            ),
+        );
+    }
 }
 
-// Worker Saga: create deposito type
 function* createDepositoTypeSaga(
     action: PayloadAction<{ name: string; yearlyReturn: number }>,
 ) {
@@ -15,12 +28,17 @@ function* createDepositoTypeSaga(
             action.payload,
         );
         yield put(depositoActions.createDepositoTypeSuccess(newDepositoType));
+        // Refresh list
+        yield put(depositoActions.fetchDepositoTypesRequest());
     } catch (error: any) {
-        yield put(depositoActions.createDepositoTypeFailure(error.message));
+        yield put(
+            depositoActions.createDepositoTypeFailure(
+                error.message || 'Failed to create deposito type',
+            ),
+        );
     }
 }
 
-// Worker Saga: update deposito type
 function* updateDepositoTypeSaga(
     action: PayloadAction<{ id: string; name: string; yearlyReturn: number }>,
 ) {
@@ -28,26 +46,39 @@ function* updateDepositoTypeSaga(
         const updatedDepositoType: DepositoType = yield call(
             depositoService.updateDepositoType,
             action.payload.id,
-            { name: action.payload.name, yearlyReturn: action.payload.yearlyReturn },
+            {
+                name: action.payload.name,
+                yearlyReturn: action.payload.yearlyReturn,
+            },
         );
         yield put(depositoActions.updateDepositoTypeSuccess(updatedDepositoType));
+        // Refresh list
+        yield put(depositoActions.fetchDepositoTypesRequest());
     } catch (error: any) {
-        yield put(depositoActions.updateDepositoTypeFailure(error.message));
+        yield put(
+            depositoActions.updateDepositoTypeFailure(
+                error.message || 'Failed to update deposito type',
+            ),
+        );
     }
 }
 
-// Worker Saga: delete deposito type
 function* deleteDepositoTypeSaga(action: PayloadAction<string>) {
     try {
         yield call(depositoService.deleteDepositoType, action.payload);
-        yield put(depositoActions.deleteDepositoTypeSuccess(action.payload));
+        yield put(depositoActions.deleteDepositoTypeSuccess());
+        // Refresh list
+        yield put(depositoActions.fetchDepositoTypesRequest());
     } catch (error: any) {
-        yield put(depositoActions.deleteDepositoTypeFailure(error.message));
+        yield put(
+            depositoActions.deleteDepositoTypeFailure(
+                error.message || 'Failed to delete deposito type',
+            ),
+        );
     }
 }
 
-// Watcher Saga
-export function* depositoSaga() {
+export default function* depositoSaga() {
     yield takeLatest(
         depositoActions.fetchDepositoTypesRequest.type,
         fetchDepositoTypesSaga,

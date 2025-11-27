@@ -1,3 +1,11 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Customer } from '../../types/customer';
+
+interface CustomerState {
+    customers: Customer[];
+    selectedCustomer: Customer | null;
+    loading: boolean;
+    error: string | null;
 }
 
 const initialState: CustomerState = {
@@ -64,8 +72,7 @@ const customerSlice = createSlice({
             state.loading = true;
             state.error = null;
         },
-        deleteCustomerSuccess: (state, action: PayloadAction<string>) => {
-            state.customers = state.customers.filter(c => c.id !== action.payload);
+        deleteCustomerSuccess: state => {
             state.loading = false;
         },
         deleteCustomerFailure: (state, action: PayloadAction<string>) => {

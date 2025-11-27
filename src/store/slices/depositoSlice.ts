@@ -1,3 +1,11 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { DepositoType } from '../../types/deposito';
+
+interface DepositoState {
+    depositoTypes: DepositoType[];
+    selectedDepositoType: DepositoType | null;
+    loading: boolean;
+    error: string | null;
 }
 
 const initialState: DepositoState = {
@@ -48,11 +56,7 @@ const depositoSlice = createSlice({
         // Update Deposito Type
         updateDepositoTypeRequest: (
             state,
-            _action: PayloadAction<{
-                id: string;
-                name: string;
-                yearlyReturn: number;
-            }>,
+            _action: PayloadAction<{ id: string; name: string; yearlyReturn: number }>,
         ) => {
             state.loading = true;
             state.error = null;
@@ -76,10 +80,7 @@ const depositoSlice = createSlice({
             state.loading = true;
             state.error = null;
         },
-        deleteDepositoTypeSuccess: (state, action: PayloadAction<string>) => {
-            state.depositoTypes = state.depositoTypes.filter(
-                d => d.id !== action.payload,
-            );
+        deleteDepositoTypeSuccess: state => {
             state.loading = false;
         },
         deleteDepositoTypeFailure: (state, action: PayloadAction<string>) => {

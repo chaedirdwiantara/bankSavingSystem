@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Text, StyleSheet, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { CustomerStackParamList } from '@navigation/types';
-import { Screen, Input, Button } from '@components';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { customerActions } from '@store/slices/customerSlice';
-import { Colors } from '@constants/colors';
-import { Spacing } from '@constants/spacing';
-import { FontSizes, FontWeights } from '@constants/typography';
+import { CustomerStackParamList } from '../../navigation/types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { Screen, Input, Button } from '../../components';
+import { customerActions } from '../../store/slices/customerSlice';
+import { Colors } from '../../constants/colors';
+import { Spacing } from '../../constants/spacing';
+import { FontSizes, FontWeights } from '../../constants/typography';
 
 type Props = NativeStackScreenProps<CustomerStackParamList, 'CustomerForm'>;
 
@@ -17,7 +17,7 @@ const CustomerFormScreen: React.FC<Props> = ({ navigation, route }) => {
     const { loading, error, customers } = useAppSelector(state => state.customer);
 
     const existingCustomer = customerId
-        ? customers.find(c => c.id === customerId)
+        ? customers.find((c: any) => c.id === customerId)
         : null;
 
     const [name, setName] = useState(existingCustomer?.name || '');
@@ -67,7 +67,7 @@ const CustomerFormScreen: React.FC<Props> = ({ navigation, route }) => {
             <Input
                 label="Customer Name"
                 value={name}
-                onChangeText={text => {
+                onChangeText={(text: string) => {
                     setName(text);
                     setNameError('');
                 }}

@@ -1,3 +1,16 @@
+import { getData, setData } from './storage';
+import {
+    Transaction,
+    TransactionType,
+    CreateDepositDTO,
+    CreateWithdrawalDTO,
+} from '../types/transaction';
+import { v4 as uuidv4 } from 'uuid';
+import { getAccountById, updateAccountBalance } from './accountService';
+import { getDepositoTypeById } from './depositoTypeService';
+import { calculateInterest } from '../utils/calculations';
+
+const STORAGE_KEY = 'transactions';
 
 export async function getTransactionsByAccount(
     accountId: string,

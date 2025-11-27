@@ -1,6 +1,16 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Transaction } from '../../types/transaction';
+
+interface TransactionState {
+    transactions: Transaction[];
+    selectedTransaction: Transaction | null;
+    loading: boolean;
+    error: string | null;
+}
 
 const initialState: TransactionState = {
     transactions: [],
+    selectedTransaction: null,
     loading: false,
     error: null,
 };
@@ -14,7 +24,10 @@ const transactionSlice = createSlice({
             state.loading = true;
             state.error = null;
         },
-        fetchTransactionsSuccess: (state, action: PayloadAction<Transaction[]>) => {
+        fetchTransactionsSuccess: (
+            state,
+            action: PayloadAction<Transaction[]>,
+        ) => {
             state.transactions = action.payload;
             state.loading = false;
         },
@@ -36,7 +49,7 @@ const transactionSlice = createSlice({
             state.error = null;
         },
         createDepositSuccess: (state, action: PayloadAction<Transaction>) => {
-            state.transactions.unshift(action.payload); // Add to beginning
+            state.transactions.push(action.payload);
             state.loading = false;
         },
         createDepositFailure: (state, action: PayloadAction<string>) => {
@@ -57,7 +70,7 @@ const transactionSlice = createSlice({
             state.error = null;
         },
         createWithdrawalSuccess: (state, action: PayloadAction<Transaction>) => {
-            state.transactions.unshift(action.payload); // Add to beginning
+            state.transactions.push(action.payload);
             state.loading = false;
         },
         createWithdrawalFailure: (state, action: PayloadAction<string>) => {
@@ -68,11 +81,6 @@ const transactionSlice = createSlice({
         // Clear Error
         clearTransactionError: state => {
             state.error = null;
-        },
-
-        // Clear Transactions (when switching accounts)
-        clearTransactions: state => {
-            state.transactions = [];
         },
     },
 });

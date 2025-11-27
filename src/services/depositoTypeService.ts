@@ -1,3 +1,15 @@
+import { getData, setData } from './storage';
+import {
+    DepositoType,
+    CreateDepositoTypeDTO,
+    UpdateDepositoTypeDTO,
+} from '../types/deposito';
+import { v4 as uuidv4 } from 'uuid';
+import { dummyDepositoTypes } from './dummy/data';
+
+const STORAGE_KEY = 'depositoTypes';
+
+// Initialize with dummy data on first run
 let initialized = false;
 
 async function ensureInitialized(): Promise<void> {

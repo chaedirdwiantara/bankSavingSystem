@@ -1,3 +1,11 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Account } from '../../types/account';
+
+interface AccountState {
+    accounts: Account[];
+    selectedAccount: Account | null;
+    loading: boolean;
+    error: string | null;
 }
 
 const initialState: AccountState = {
@@ -51,25 +59,12 @@ const accountSlice = createSlice({
             state.loading = true;
             state.error = null;
         },
-        deleteAccountSuccess: (state, action: PayloadAction<string>) => {
-            state.accounts = state.accounts.filter(a => a.id !== action.payload);
+        deleteAccountSuccess: state => {
             state.loading = false;
         },
         deleteAccountFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;
             state.error = action.payload;
-        },
-
-        // Update Account Balance (internal use by transactions)
-        updateAccountBalance: (
-            state,
-            action: PayloadAction<{ id: string; balance: number }>,
-        ) => {
-            const index = state.accounts.findIndex(a => a.id === action.payload.id);
-            if (index !== -1) {
-                state.accounts[index].balance = action.payload.balance;
-                state.accounts[index].updatedAt = new Date();
-            }
         },
 
         // Select Account

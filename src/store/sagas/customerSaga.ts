@@ -1,22 +1,44 @@
+import { call, put, takeLatest } from 'redux-saga/effects';
+import { PayloadAction } from '@reduxjs/toolkit';
+import * as customerService from '../../services/customerService';
+import { customerActions } from '../slices/customerSlice';
+import { Customer } from '../../types/customer';
+
+function* fetchCustomersSaga() {
+    try {
+        const customers: Customer[] = yield call(
+            customerService.getAllCustomers,
+        );
+        yield put(customerActions.fetchCustomersSuccess(customers));
     } catch (error: any) {
-    yield put(customerActions.fetchCustomersFailure(error.message));
-}
+        yield put(
+            customerActions.fetchCustomersFailure(
+                error.message || 'Failed to fetch customers',
+            ),
+        );
+    }
 }
 
-// Worker Saga: create customer
-function* createCustomerSaga(action: PayloadAction<{ name: string }>) {
+function* createCustomerSaga(
+    action: PayloadAction<{ name: string }>,
+) {
     try {
         const newCustomer: Customer = yield call(
             customerService.createCustomer,
             action.payload,
         );
         yield put(customerActions.createCustomerSuccess(newCustomer));
+        // Refresh list
+        yield put(customerActions.fetchCustomersRequest());
     } catch (error: any) {
-        yield put(customerActions.createCustomerFailure(error.message));
+        yield put(
+            customerActions.createCustomerFailure(
+                error.message || 'Failed to create customer',
+            ),
+        );
     }
 }
 
-// Worker Saga: update customer
 function* updateCustomerSaga(
     action: PayloadAction<{ id: string; name: string }>,
 ) {
@@ -27,23 +49,33 @@ function* updateCustomerSaga(
             { name: action.payload.name },
         );
         yield put(customerActions.updateCustomerSuccess(updatedCustomer));
+        // Refresh list
+        yield put(customerActions.fetchCustomersRequest());
     } catch (error: any) {
-        yield put(customerActions.updateCustomerFailure(error.message));
+        yield put(
+            customerActions.updateCustomerFailure(
+                error.message || 'Failed to update customer',
+            ),
+        );
     }
 }
 
-// Worker Saga: delete customer
 function* deleteCustomerSaga(action: PayloadAction<string>) {
     try {
         yield call(customerService.deleteCustomer, action.payload);
-        yield put(customerActions.deleteCustomerSuccess(action.payload));
+        yield put(customerActions.deleteCustomerSuccess());
+        // Refresh list
+        yield put(customerActions.fetchCustomersRequest());
     } catch (error: any) {
-        yield put(customerActions.deleteCustomerFailure(error.message));
+        yield put(
+            customerActions.deleteCustomerFailure(
+                error.message || 'Failed to delete customer',
+            ),
+        );
     }
 }
 
-// Watcher Saga
-export function* customerSaga() {
+export default function* customerSaga() {
     yield takeLatest(
         customerActions.fetchCustomersRequest.type,
         fetchCustomersSaga,

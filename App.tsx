@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { store } from '@store/store';
-import { Screen, Button, Card, Input, Loading } from '@components';
+import { Screen, Button, Card, Input, Loading } from './src/components';
 import { Text, View, StyleSheet } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { customerActions } from '@store/slices/customerSlice';

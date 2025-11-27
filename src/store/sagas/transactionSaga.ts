@@ -1,19 +1,27 @@
-transactionService.getTransactionsByAccount,
-    action.payload,
+import { call, put, takeLatest } from 'redux-saga/effects';
+import { PayloadAction } from '@reduxjs/toolkit';
+import * as transactionService from '../../services/transactionService';
+import { transactionActions } from '../slices/transactionSlice';
+import { Transaction } from '../../types/transaction';
+
+function* fetchTransactionsSaga(action: PayloadAction<string>) {
+    try {
+        const transactions: Transaction[] = yield call(
+            transactionService.getTransactionsByAccount,
+            action.payload,
         );
-yield put(transactionActions.fetchTransactionsSuccess(transactions));
+        yield put(transactionActions.fetchTransactionsSuccess(transactions));
     } catch (error: any) {
-    yield put(transactionActions.fetchTransactionsFailure(error.message));
-}
+        yield put(
+            transactionActions.fetchTransactionsFailure(
+                error.message || 'Failed to fetch transactions',
+            ),
+        );
+    }
 }
 
-// Worker Saga: create deposit
 function* createDepositSaga(
-    action: PayloadAction<{
-        accountId: string;
-        amount: number;
-        depositDate: Date;
-    }>,
+    action: PayloadAction<{ accountId: string; amount: number; depositDate: Date }>,
 ) {
     try {
         const transaction: Transaction = yield call(
@@ -21,20 +29,19 @@ function* createDepositSaga(
             action.payload,
         );
         yield put(transactionActions.createDepositSuccess(transaction));
-
-        // Update account balance in Redux
+        // Refresh list
         yield put(
-            accountActions.updateAccountBalance({
-                id: action.payload.accountId,
-                balance: transaction.balanceAfter,
-            }),
+            transactionActions.fetchTransactionsRequest(action.payload.accountId),
         );
     } catch (error: any) {
-        yield put(transactionActions.createDepositFailure(error.message));
+        yield put(
+            transactionActions.createDepositFailure(
+                error.message || 'Failed to create deposit',
+            ),
+        );
     }
 }
 
-// Worker Saga: create withdrawal
 function* createWithdrawalSaga(
     action: PayloadAction<{
         accountId: string;
@@ -48,21 +55,20 @@ function* createWithdrawalSaga(
             action.payload,
         );
         yield put(transactionActions.createWithdrawalSuccess(transaction));
-
-        // Update account balance in Redux
+        // Refresh list
         yield put(
-            accountActions.updateAccountBalance({
-                id: action.payload.accountId,
-                balance: transaction.balanceAfter,
-            }),
+            transactionActions.fetchTransactionsRequest(action.payload.accountId),
         );
     } catch (error: any) {
-        yield put(transactionActions.createWithdrawalFailure(error.message));
+        yield put(
+            transactionActions.createWithdrawalFailure(
+                error.message || 'Failed to create withdrawal',
+            ),
+        );
     }
 }
 
-// Watcher Saga
-export function* transactionSaga() {
+export default function* transactionSaga() {
     yield takeLatest(
         transactionActions.fetchTransactionsRequest.type,
         fetchTransactionsSaga,
