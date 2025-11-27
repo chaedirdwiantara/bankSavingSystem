@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CustomerStackParamList } from '../../navigation/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -29,12 +29,17 @@ const CustomerListScreen: React.FC<Props> = ({ navigation }) => {
         navigation.navigate('CustomerDetail', { customerId });
     };
 
+    const handleRefresh = () => {
+        dispatch(customerActions.fetchCustomersRequest());
+    };
+
     // Filter customers based on search query
     const filteredCustomers = customers.filter(customer =>
         customer.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
-    if (loading) {
+    // Only show full screen loading on initial load
+    if (loading && customers.length === 0) {
         return (
             <Screen>
                 <Loading fullScreen />
@@ -95,6 +100,14 @@ const CustomerListScreen: React.FC<Props> = ({ navigation }) => {
                         </Card>
                     )}
                     showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={loading}
+                            onRefresh={handleRefresh}
+                            colors={[Colors.primary]}
+                            tintColor={Colors.primary}
+                        />
+                    }
                 />
             )}
         </Screen>

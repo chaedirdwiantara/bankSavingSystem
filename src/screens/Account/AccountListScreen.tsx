@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AccountStackParamList } from '../../navigation/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -35,6 +35,12 @@ const AccountListScreen: React.FC<Props> = ({ navigation }) => {
         navigation.navigate('AccountDetail', { accountId: id });
     };
 
+    const handleRefresh = () => {
+        dispatch(accountActions.fetchAccountsRequest());
+        dispatch(customerActions.fetchCustomersRequest());
+        dispatch(depositoActions.fetchDepositoTypesRequest());
+    };
+
     const getCustomerName = (id: string) => {
         return customers.find(c => c.id === id)?.name || 'Unknown Customer';
     };
@@ -49,7 +55,7 @@ const AccountListScreen: React.FC<Props> = ({ navigation }) => {
         return customerName.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
-    if (loading) {
+    if (loading && accounts.length === 0) {
         return (
             <Screen>
                 <Loading fullScreen />
@@ -115,6 +121,14 @@ const AccountListScreen: React.FC<Props> = ({ navigation }) => {
                         </Card>
                     )}
                     showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={loading}
+                            onRefresh={handleRefresh}
+                            colors={[Colors.primary]}
+                            tintColor={Colors.primary}
+                        />
+                    }
                 />
             )}
         </Screen>
