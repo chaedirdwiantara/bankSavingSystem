@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-    TextInput,
     Text,
     View,
     StyleSheet,
     TextInputProps,
     ViewStyle,
+    TextInput,
 } from 'react-native';
 import { Colors } from '@constants/colors';
 import { FontSizes, FontWeights } from '@constants/typography';
@@ -97,7 +97,8 @@ const styles = StyleSheet.create({
         borderColor: Colors.border,
         borderRadius: BorderRadius.md,
         backgroundColor: Colors.background,
-        minHeight: 48,
+        height: 52,
+        paddingTop: Spacing.md,
     },
     inputContainer_error: {
         borderColor: Colors.error,
@@ -107,10 +108,11 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
+        height: 52,
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.sm,
         fontSize: FontSizes.base,
         color: Colors.textPrimary,
+        textAlignVertical: 'center',
     },
     input_withPrefix: {
         paddingLeft: 0,
