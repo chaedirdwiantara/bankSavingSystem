@@ -1,8 +1,8 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DepositoStackParamList } from './types';
-import DepositoTypeListScreen from '@screens/DepositoType/DepositoTypeListScreen';
-import DepositoTypeFormScreen from '@screens/DepositoType/DepositoTypeFormScreen';
+import DepositoTypeListScreen from '../screens/DepositoType/DepositoTypeListScreen';
+import DepositoTypeFormScreen from '../screens/DepositoType/DepositoTypeFormScreen';
 
 const Stack = createNativeStackNavigator<DepositoStackParamList>();
 
