@@ -1,13 +1,13 @@
 import React from 'react';
 import {
     View,
-    SafeAreaView,
     StyleSheet,
     ScrollView,
     ViewStyle,
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@constants/colors';
 import { Spacing } from '@constants/spacing';
 

@@ -55,8 +55,8 @@ export const MainNavigator = () => {
 
 const styles = StyleSheet.create({
     tabBar: {
-        height: 60,
-        paddingBottom: 8,
+        height: 70,
+        paddingBottom: 12,
         paddingTop: 8,
         backgroundColor: Colors.background,
         borderTopWidth: 1,
