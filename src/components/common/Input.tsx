@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
         borderRadius: BorderRadius.md,
         backgroundColor: Colors.background,
         height: 52,
-        paddingTop: Spacing.md,
     },
     inputContainer_error: {
         borderColor: Colors.error,

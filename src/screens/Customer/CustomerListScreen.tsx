@@ -60,12 +60,13 @@ const CustomerListScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             {/* Search Bar */}
-            <Input
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder="Search customers..."
-                style={styles.searchInput}
-            />
+            <View style={styles.searchContainer}>
+                <Input
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder="Search customers..."
+                />
+            </View>
 
             {filteredCustomers.length === 0 ? (
                 <EmptyState
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     addButton: {
         minWidth: 80,
     },
-    searchInput: {
+    searchContainer: {
         marginBottom: Spacing.md,
     },
     customerCard: {
