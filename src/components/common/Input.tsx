@@ -51,20 +51,36 @@ export const Input: React.FC<InputProps> = ({
                     hasError && styles.inputContainer_error,
                     rest.editable === false && styles.inputContainer_disabled,
                 ]}>
-                {prefix && <View style={styles.prefix}>{prefix}</View>}
+                {prefix && (
+                    <View style={styles.prefix}>
+                        {typeof prefix === 'string' ? (
+                            <Text style={styles.affixText}>{prefix}</Text>
+                        ) : (
+                            prefix
+                        )}
+                    </View>
+                )}
 
                 <TextInput
                     style={[
                         styles.input,
-                        prefix && styles.input_withPrefix,
-                        suffix && styles.input_withSuffix,
+                        prefix ? styles.input_withPrefix : undefined,
+                        suffix ? styles.input_withSuffix : undefined,
                         style,
                     ]}
                     placeholderTextColor={Colors.textDisabled}
                     {...rest}
                 />
 
-                {suffix && <View style={styles.suffix}>{suffix}</View>}
+                {suffix && (
+                    <View style={styles.suffix}>
+                        {typeof suffix === 'string' ? (
+                            <Text style={styles.affixText}>{suffix}</Text>
+                        ) : (
+                            suffix
+                        )}
+                    </View>
+                )}
             </View>
 
             {error && <Text style={styles.errorText}>{error}</Text>}
@@ -135,5 +151,9 @@ const styles = StyleSheet.create({
         fontSize: FontSizes.xs,
         color: Colors.textSecondary,
         marginTop: Spacing.xs,
+    },
+    affixText: {
+        fontSize: FontSizes.base,
+        color: Colors.textPrimary,
     },
 });
