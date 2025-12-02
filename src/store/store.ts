@@ -1,13 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { rootSaga } from './sagas';
+import Reactotron from '../config/ReactotronConfig';
 
 import customerReducer from './slices/customerSlice';
 import accountReducer from './slices/accountSlice';
 import depositoReducer from './slices/depositoSlice';
 import transactionReducer from './slices/transactionSlice';
 
-const sagaMiddleware = createSagaMiddleware();
+const sagaMonitor = __DEV__ ? Reactotron.createSagaMonitor?.() : undefined;
+const sagaMiddleware = createSagaMiddleware({ sagaMonitor });
 
 export const store = configureStore({
     reducer: {
@@ -34,6 +36,10 @@ export const store = configureStore({
                 ignoredPaths: ['customer.customers', 'account.accounts', 'deposito.depositoTypes', 'transaction.transactions'],
             },
         }).concat(sagaMiddleware),
+    enhancers: (getDefaultEnhancers) =>
+        __DEV__
+            ? getDefaultEnhancers().concat(Reactotron.createEnhancer())
+            : getDefaultEnhancers(),
 });
 
 sagaMiddleware.run(rootSaga);

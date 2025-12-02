@@ -1,62 +1,42 @@
-import { getData, setData } from './storage';
+import apiClient from './api';
 import { Customer, CreateCustomerDTO, UpdateCustomerDTO } from '../types/customer';
-import { v4 as uuidv4 } from 'uuid';
-import { dummyCustomers } from './dummy/data';
 
-const STORAGE_KEY = 'customers';
-
-// Initialize with dummy data on first run
-let initialized = false;
-
-async function ensureInitialized(): Promise<void> {
-    if (initialized) return;
-
-    const existing = await getData<Customer[]>(STORAGE_KEY);
-    if (!existing || existing.length === 0) {
-        await setData(STORAGE_KEY, dummyCustomers);
-    }
-    initialized = true;
-}
+// Helper to map backend response to frontend model
+const mapToFrontend = (data: any): Customer => ({
+    id: data.id,
+    name: data.name,
+    createdAt: new Date(data.created_at),
+    updatedAt: new Date(data.updated_at),
+});
 
 export async function getAllCustomers(): Promise<Customer[]> {
-    await ensureInitialized();
     try {
-        const data = await getData<Customer[]>(STORAGE_KEY);
-        return data || [];
-    } catch (error) {
-        throw new Error('Failed to fetch customers');
+        const response = await apiClient.get('/customers');
+        return (response.data || []).map(mapToFrontend);
+    } catch (error: any) {
+        throw new Error(error.message || 'Failed to fetch customers');
     }
 }
 
 export async function getCustomerById(id: string): Promise<Customer | null> {
-    const customers = await getAllCustomers();
-    return customers.find(c => c.id === id) || null;
+    try {
+        const response = await apiClient.get(`/customers/${id}`);
+        return response.data ? mapToFrontend(response.data) : null;
+    } catch (error: any) {
+        throw new Error(error.message || 'Failed to fetch customer');
+    }
 }
 
 export async function createCustomer(
     dto: CreateCustomerDTO,
 ): Promise<Customer> {
     try {
-        const customers = await getAllCustomers();
-
-        // Validate name
-        if (!dto.name || dto.name.trim().length < 3) {
-            throw new Error('Customer name must be at least 3 characters');
-        }
-
-        const newCustomer: Customer = {
-            id: uuidv4(),
+        const response = await apiClient.post('/customers', {
             name: dto.name.trim(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-
-        customers.push(newCustomer);
-        await setData(STORAGE_KEY, customers);
-
-        return newCustomer;
+        });
+        return mapToFrontend(response.data);
     } catch (error: any) {
-        throw error;
+        throw new Error(error.message || 'Failed to create customer');
     }
 }
 
@@ -65,44 +45,19 @@ export async function updateCustomer(
     dto: UpdateCustomerDTO,
 ): Promise<Customer> {
     try {
-        const customers = await getAllCustomers();
-        const index = customers.findIndex(c => c.id === id);
-
-        if (index === -1) {
-            throw new Error('Customer not found');
-        }
-
-        // Validate name
-        if (!dto.name || dto.name.trim().length < 3) {
-            throw new Error('Customer name must be at least 3 characters');
-        }
-
-        customers[index] = {
-            ...customers[index],
+        const response = await apiClient.put(`/customers/${id}`, {
             name: dto.name.trim(),
-            updatedAt: new Date(),
-        };
-
-        await setData(STORAGE_KEY, customers);
-        return customers[index];
+        });
+        return mapToFrontend(response.data);
     } catch (error: any) {
-        throw error;
+        throw new Error(error.message || 'Failed to update customer');
     }
 }
 
 export async function deleteCustomer(id: string): Promise<void> {
     try {
-        // Check if customer has accounts (import accountService to check)
-        // For now, just delete
-        const customers = await getAllCustomers();
-        const filtered = customers.filter(c => c.id !== id);
-
-        if (filtered.length === customers.length) {
-            throw new Error('Customer not found');
-        }
-
-        await setData(STORAGE_KEY, filtered);
+        await apiClient.delete(`/customers/${id}`);
     } catch (error: any) {
-        throw error;
+        throw new Error(error.message || 'Failed to delete customer');
     }
 }

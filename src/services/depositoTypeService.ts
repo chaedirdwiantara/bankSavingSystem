@@ -1,73 +1,50 @@
-import { getData, setData } from './storage';
+import apiClient from './api';
 import {
     DepositoType,
     CreateDepositoTypeDTO,
     UpdateDepositoTypeDTO,
 } from '../types/deposito';
-import { v4 as uuidv4 } from 'uuid';
-import { dummyDepositoTypes } from './dummy/data';
 
-const STORAGE_KEY = 'depositoTypes';
-
-// Initialize with dummy data on first run
-let initialized = false;
-
-async function ensureInitialized(): Promise<void> {
-    if (initialized) return;
-
-    const existing = await getData<DepositoType[]>(STORAGE_KEY);
-    if (!existing || existing.length === 0) {
-        await setData(STORAGE_KEY, dummyDepositoTypes);
-    }
-    initialized = true;
-}
+// Helper to map backend response to frontend model
+const mapToFrontend = (data: any): DepositoType => ({
+    id: data.id,
+    name: data.name,
+    yearlyReturn: Number(data.yearly_return), // Ensure number
+    createdAt: new Date(data.created_at),
+    updatedAt: new Date(data.updated_at),
+});
 
 export async function getAllDepositoTypes(): Promise<DepositoType[]> {
-    await ensureInitialized();
     try {
-        const data = await getData<DepositoType[]>(STORAGE_KEY);
-        return data || [];
-    } catch (error) {
-        throw new Error('Failed to fetch deposito types');
+        const response = await apiClient.get('/deposito-types');
+        return (response.data || []).map(mapToFrontend);
+    } catch (error: any) {
+        throw new Error(error.message || 'Failed to fetch deposito types');
     }
 }
 
 export async function getDepositoTypeById(
     id: string,
 ): Promise<DepositoType | null> {
-    const depositoTypes = await getAllDepositoTypes();
-    return depositoTypes.find(d => d.id === id) || null;
+    try {
+        const response = await apiClient.get(`/deposito-types/${id}`);
+        return response.data ? mapToFrontend(response.data) : null;
+    } catch (error: any) {
+        throw new Error(error.message || 'Failed to fetch deposito type');
+    }
 }
 
 export async function createDepositoType(
     dto: CreateDepositoTypeDTO,
 ): Promise<DepositoType> {
     try {
-        const depositoTypes = await getAllDepositoTypes();
-
-        // Validate
-        if (!dto.name || dto.name.trim().length < 3) {
-            throw new Error('Deposito type name must be at least 3 characters');
-        }
-
-        if (dto.yearlyReturn < 0 || dto.yearlyReturn > 1) {
-            throw new Error('Yearly return must be between 0% and 100%');
-        }
-
-        const newDepositoType: DepositoType = {
-            id: uuidv4(),
+        const response = await apiClient.post('/deposito-types', {
             name: dto.name.trim(),
-            yearlyReturn: dto.yearlyReturn,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-
-        depositoTypes.push(newDepositoType);
-        await setData(STORAGE_KEY, depositoTypes);
-
-        return newDepositoType;
+            yearly_return: dto.yearlyReturn,
+        });
+        return mapToFrontend(response.data);
     } catch (error: any) {
-        throw error;
+        throw new Error(error.message || 'Failed to create deposito type');
     }
 }
 
@@ -76,48 +53,20 @@ export async function updateDepositoType(
     dto: UpdateDepositoTypeDTO,
 ): Promise<DepositoType> {
     try {
-        const depositoTypes = await getAllDepositoTypes();
-        const index = depositoTypes.findIndex(d => d.id === id);
-
-        if (index === -1) {
-            throw new Error('Deposito type not found');
-        }
-
-        // Validate
-        if (!dto.name || dto.name.trim().length < 3) {
-            throw new Error('Deposito type name must be at least 3 characters');
-        }
-
-        if (dto.yearlyReturn < 0 || dto.yearlyReturn > 1) {
-            throw new Error('Yearly return must be between 0% and 100%');
-        }
-
-        depositoTypes[index] = {
-            ...depositoTypes[index],
+        const response = await apiClient.put(`/deposito-types/${id}`, {
             name: dto.name.trim(),
-            yearlyReturn: dto.yearlyReturn,
-            updatedAt: new Date(),
-        };
-
-        await setData(STORAGE_KEY, depositoTypes);
-        return depositoTypes[index];
+            yearly_return: dto.yearlyReturn,
+        });
+        return mapToFrontend(response.data);
     } catch (error: any) {
-        throw error;
+        throw new Error(error.message || 'Failed to update deposito type');
     }
 }
 
 export async function deleteDepositoType(id: string): Promise<void> {
     try {
-        // TODO: Check if deposito type is used by any accounts
-        const depositoTypes = await getAllDepositoTypes();
-        const filtered = depositoTypes.filter(d => d.id !== id);
-
-        if (filtered.length === depositoTypes.length) {
-            throw new Error('Deposito type not found');
-        }
-
-        await setData(STORAGE_KEY, filtered);
+        await apiClient.delete(`/deposito-types/${id}`);
     } catch (error: any) {
-        throw error;
+        throw new Error(error.message || 'Failed to delete deposito type');
     }
 }

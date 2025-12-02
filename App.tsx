@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import './src/config/ReactotronConfig'; // Initialize Reactotron
 import { store } from './src/store/store';
 import { RootNavigator } from './src/navigation/RootNavigator';
 
